@@ -11,8 +11,10 @@ pub struct FileItem {
     extension: Option<String>
 }
 
-pub enum {
-
+pub enum Navigate {
+    Forward(PathBuf),
+    Backward,
+    Refresh
 }
 
 impl FileState {
@@ -46,12 +48,27 @@ impl FileState {
     }
 
     pub fn read_dir(&mut self) -> io::Result<()> {
-        let mut entries = fs::read_dir(&self.path)? 
+        let mut entries = fs::read_dir(&self.current_path)? 
             .map(|res| res.and_then(Self::process_entry))
             .collect::<Result<Vec<_>, io::Error>>()?;
 
         self.files = entries;
 
+        Ok(())
+    }
+
+    pub fn navigate(&mut self, nav: Navigate) -> io::Result<()> {
+        match nav {
+            Navigate::Forward(path) => {
+                self.current_path = path;
+            }
+            Navigate::Backward => {
+                self.current_path.pop();
+            }
+            Navigate::Refresh => {}
+        }
+
+        self.read_dir()?;
         Ok(())
     }
 }
