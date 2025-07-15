@@ -8,14 +8,14 @@ pub struct App {
 }
 
 pub struct FileState {
-    pub path: PathBuf,
+    pub current_path: PathBuf,
     pub files: Vec<FileItem>
 }
 
 impl Default for FileState {
     fn default() -> Self {
         let path = std::fs::canonicalize(".").unwrap_or_else(|_| PathBuf::from("/"));
-        Self { path: path, files: vec![] }
+        Self { current_path: path, files: vec![] }
     }
 }
 
