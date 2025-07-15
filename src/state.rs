@@ -1,5 +1,7 @@
 use std::path::PathBuf;
 
+use crate::fs::FileItem;
+
 pub struct App {
     pub file: FileState,
     pub ui: AppState
@@ -7,7 +9,7 @@ pub struct App {
 
 pub struct FileState {
     pub path: PathBuf,
-    pub files: Vec<String>
+    pub files: Vec<FileItem>
 }
 
 impl Default for FileState {
