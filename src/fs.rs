@@ -11,9 +11,13 @@ pub struct FileItem {
     extension: Option<String>
 }
 
+pub enum {
+
+}
+
 impl FileState {
     fn process_entry(entry: DirEntry) -> io::Result<FileItem> {
-        let path = entry.path();
+        let path = fs::canonicalize(entry.path())?;
         let metadata = fs::metadata(&path)?;
 
         let name = entry

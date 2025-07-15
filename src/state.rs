@@ -14,7 +14,8 @@ pub struct FileState {
 
 impl Default for FileState {
     fn default() -> Self {
-        Self { path: PathBuf::from("."), files: vec![] }
+        let path = std::fs::canonicalize(".").unwrap_or_else(|_| PathBuf::from("/"));
+        Self { path: path, files: vec![] }
     }
 }
 
