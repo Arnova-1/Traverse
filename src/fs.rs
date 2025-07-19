@@ -1,5 +1,7 @@
 use std::{fs::{self, DirEntry}, io, path::PathBuf, time::SystemTime};
 
+use chrono::DateTime;
+
 use crate::state::FileState;
 
 pub struct FileItem {
@@ -48,7 +50,7 @@ impl FileState {
     }
 
     pub fn read_dir(&mut self) -> io::Result<()> {
-        let mut entries = fs::read_dir(&self.current_path)? 
+        let entries = fs::read_dir(&self.current_path)? 
             .map(|res| res.and_then(Self::process_entry))
             .collect::<Result<Vec<_>, io::Error>>()?;
 
@@ -70,5 +72,22 @@ impl FileState {
 
         self.read_dir()?;
         Ok(())
+    }
+
+    pub fn formatted_lines(&self) -> Vec<String> {
+        self.files.iter().map(|f| f.format_item()).collect()
+    }
+}
+
+impl FileItem {
+    pub fn format_item(&self) -> String {
+        let icon = if self.is_dir { " " } else { "󰈙 " };
+        let size = self.size.map(|s| format!("{:.1} KB", s as f64 / 1024.0)).unwrap_or("-".into());
+        let date = self.modified.map(|t| {
+            let datetime: DateTime<chrono::Local> = t.into();
+            datetime.format("%Y-%m-%d %H:%M").to_string()
+        }).unwrap_or("-".into());
+
+        format!("{icon} {:<20} {:<6} {:<8} {}", self.name, if self.is_dir {"<DIR>"} else {"<FILE>"}, size, date)
     }
 }
